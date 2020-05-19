@@ -1,0 +1,44 @@
+pipeline {
+   agent any
+
+   stages {
+    stage("clonning the repo") {
+         steps {
+            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/Sangeethapatel/demorepo26.git']]])
+         }
+      }
+      
+      stage("build code") {
+         steps {
+            sh label: '', script: 'mvn clean package'
+      }
+      }
+      stage("deploy code") {
+         steps {
+             sh label: '', script: 'sudo systemctl stop tomcat'
+            sh label: '', script: 'sudo rm -rf /opt/tomcat/tomcat1/webapps/mvn-hello-world*'
+              sh label: '', script: 'sudo cp -f target/mvn-hello-world.war /opt/tomcat/tomcat1/webapps/'
+                sh label: '', script: 'sudo systemctl start tomcat'
+         }
+      }
+      /*stage("user psswd")
+      {
+         steps{ 
+             withCredentials([usernamePassword(credentialsId: '', passwordVariable: '', usernameVariable: '')]) {
+    echo "username is: ${usernme}"
+    echo "psswd is: ${psswde}"
+       }
+         }  
+}*/
+
+stage("parameter") {
+         steps {
+             script {
+           print env.countrylist}
+         }
+      }
+      
+}
+}
+
+
